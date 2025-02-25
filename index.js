@@ -1,3 +1,5 @@
+import { readFile, writeFile } from 'node:fs/promises';
+
 // ======
 //  Math
 // ======
@@ -120,13 +122,41 @@ const precompileCommand = (command) => {
         output = commandsMap[commandName](...args);
     }
 
-    return `
-// ${command}
-${output}`;
+    return `// ${command}
+${output}
+`;
 }
 
-// console.log(precompileCommand('add FREE_MEMORY_START "2"'));
-// console.log(precompileCommand('++ REG_RES'));
-// console.log(precompileCommand('inc REG_RES'));
-// console.log(precompileCommand('sub var:dadadad *REG_RES'));
-console.log(precompileCommand('is_num 2 label:true label:false'));
+const [inputFilePath, outputFilePath] = process.argv.slice(2);
+
+if (!inputFilePath) {
+    // TODO: read input from stdin
+    console.log('No input file provided');
+    process.exit(0);
+}
+
+(async () => {
+    try {
+        const data = await readFile(inputFilePath, { encoding: 'utf-8' });
+        
+        const precompilatonResult = data
+            .trim()
+            .split('\n')
+            .map((command) => precompileCommand(command))
+            .join('\n');
+        
+        // No output file provided - log to stdout
+        if (!outputFilePath) {
+            console.log(precompilatonResult);
+        }
+        else {
+            await writeFile(outputFilePath, precompilatonResult);
+        }
+    }
+    catch (error) {
+        console.error(error);
+        process.exit(1);
+    }
+
+    process.exit(0);
+})();
