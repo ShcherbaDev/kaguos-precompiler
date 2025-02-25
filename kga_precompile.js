@@ -1,114 +1,43 @@
 import { readFile, writeFile } from 'node:fs/promises';
-
-// ======
-//  Math
-// ======
-
-const commandAdd = (a, b) => `${_copyOrWrite(a)} ${a} to REG_A
-${_copyOrWrite(b)} ${b} to REG_B
-write OP_ADD to REG_OP
-cpu_exec`;
-
-const commandSubtract = (a, b) => `${_copyOrWrite(a)} ${a} to REG_A
-${_copyOrWrite(b)} ${b} to REG_B
-write OP_SUB to REG_OP
-cpu_exec`;
-
-const commandIncrement = (a) => `${_copyOrWrite(a)} ${a} to REG_A
-write OP_INCR to REG_OP
-cpu_exec`;
-
-const commandDecrement = (a) => `${_copyOrWrite(a)} ${a} to REG_A
-write OP_DECR to REG_OP
-cpu_exec`;
-
-const commandDivide = (a, b) => `${_copyOrWrite(a)} ${a} to REG_A
-${_copyOrWrite(b)} ${b} to REG_B
-write OP_DIV to REG_OP
-cpu_exec`;
-
-const commandModulus = (a, b) => `${_copyOrWrite(a)} ${a} to REG_A
-${_copyOrWrite(b)} ${b} to REG_B
-write OP_MOD to REG_OP
-cpu_exec`;
-
-const commandMultiply = (a, b) => `${_copyOrWrite(a)} ${a} to REG_A
-${_copyOrWrite(b)} ${b} to REG_B
-write OP_MUL to REG_OP
-cpu_exec`;
-
-// ============
-//  Conditions
-// ============
-
-const argumentIgnore = '_';
-
-const _simpleEqual = (a, b, command, true_condition, false_condition) => {
-    let output = `${_copyOrWrite(a)} ${a} to REG_A`;
-
-    if (b !== null) {
-        output += `\n${_copyOrWrite(b)} ${b} to REG_B`;
-    }
-
-output += `\nwrite ${command} to REG_OP
-cpu_exec`;
-
-    output += `\njump_if ${true_condition}`;
-
-    if (false_condition && false_condition !== argumentIgnore) {
-        output += `\njump_if_not ${false_condition}`;
-    }
-
-    return output;
-}
-
-const commandIsNumber = (a, true_condition, false_condition) => _simpleEqual(a, null, 'OP_IS_NUM', true_condition, false_condition);
-
-const commandEqual = (a, b, true_condition, false_condition) => _simpleEqual(a, b, 'OP_CMP_EQ', true_condition, false_condition);
-
-const commandNotEqual = (a, b, true_condition, false_condition) => _simpleEqual(a, b, 'OP_CMP_NEQ', true_condition, false_condition);
-
-const commandLessThan = (a, b, true_condition, false_condition) => _simpleEqual(a, b, 'OP_CMP_LT', true_condition, false_condition);
-const commandLessThanOrEqual = (a, b, true_condition, false_condition) => _simpleEqual(a, b, 'OP_CMP_LE', true_condition, false_condition);
-
-const commandMoreThan = (a, b, true_condition, false_condition) => _simpleEqual(b, a, 'OP_CMP_LT', true_condition, false_condition);
-const commandMoreThanOrEqual = (a, b, true_condition, false_condition) => _simpleEqual(b, a, 'OP_CMP_LE', true_condition, false_condition);
-
-const commandContains = (a, b, true_condition, false_condition) => _simpleEqual(a, b, 'OP_CONTAINS', true_condition, false_condition);
+import * as math from './commands/math.js';
+import * as conditions from './commands/conditions.js';
+import * as string from './commands/string.js';
 
 // =============
 //  Precompiler
 // =============
 
-const _copyOrWrite = (text) => {
-    const isCopyable = text.startsWith('var:') || !/"(.+)"/.test(text);
-    return isCopyable ? 'copy' : 'write';
-}
-
 const commandsMap = {
-    // Math commands
-    'add': commandAdd,
-    'sub': commandSubtract,
+    // Math
+    'add': math.commandAdd,
+    'sub': math.commandSubtract,
     
-    '++': commandIncrement,
-    'inc': commandIncrement,
+    '++': math.commandIncrement,
+    'inc': math.commandIncrement,
 
-    '--': commandDecrement,
-    'dec': commandDecrement,
+    '--': math.commandDecrement,
+    'dec': math.commandDecrement,
 
-    'div': commandDivide,
-    'mod': commandModulus,
-    'mlt': commandMultiply,
+    'div': math.commandDivide,
+    'mod': math.commandModulus,
+    'mlt': math.commandMultiply,
 
     // Conditions
-    'is_num': commandIsNumber,
-    'is_eq': commandEqual,
-    'is_neq': commandNotEqual,
-    'is_less': commandLessThan,
-    'is_less_or_equal': commandLessThanOrEqual,
-    'is_more': commandMoreThan,
-    'is_more_or_equal': commandMoreThanOrEqual,
-    'is_contains': commandContains
+    'is_num': conditions.commandIsNumber,
+    'is_eq': conditions.commandEqual,
+    'is_neq': conditions.commandNotEqual,
+    'is_less': conditions.commandLessThan,
+    'is_less_or_equal': conditions.commandLessThanOrEqual,
+    'is_more': conditions.commandMoreThan,
+    'is_more_or_equal': conditions.commandMoreThanOrEqual,
+    'is_contains': conditions.commandContains,
+
+    // String
+    'length': string.getLength,
+    'is_starts_with': string.isStartsWith,
+    'column_get': string.getColumn,
+    'column_replace': string.replaceColumn,
+    'concat': string.concat
 };
 
 const precompileCommand = (command) => {
@@ -118,19 +47,16 @@ const precompileCommand = (command) => {
 
     let output = command; // Default case - count unknown command as native KaguOS and just copy it to output
 
-    if (commandName in commandsMap) {
-        output = commandsMap[commandName](...args);
+    if (!(commandName in commandsMap)) {
+        return output;
     }
 
-    return `// ${command}
-${output}
-`;
+    return `// ${command}\n${commandsMap[commandName](...args)}`;
 }
 
 const [inputFilePath, outputFilePath] = process.argv.slice(2);
 
 if (!inputFilePath) {
-    // TODO: read input from stdin
     console.log('No input file provided');
     process.exit(0);
 }
