@@ -2,10 +2,13 @@ import { readFile, writeFile } from 'node:fs/promises';
 import * as math from './commands/math.js';
 import * as conditions from './commands/conditions.js';
 import * as string from './commands/string.js';
+import * as io from './commands/io.js';
 
 // =============
 //  Precompiler
 // =============
+
+const commandParsingRegex = /(?:[^\s"]+|"[^"]*")+/g;
 
 const commandsMap = {
     // Math
@@ -37,11 +40,22 @@ const commandsMap = {
     'is_starts_with': string.isStartsWith,
     'column_get': string.getColumn,
     'column_replace': string.replaceColumn,
-    'concat': string.concat
+    'concat': string.concat,
+
+    // I/O
+    'read_input': io.readInput,
+    'display': (text, color) => io.display(text, color, false),
+    'display_ln': (text, color) => io.display(text, color, true)
 };
 
 const precompileCommand = (command) => {
-    const tokens = command.split(' ');
+    // const tokens = command.split(' ');
+    const tokens = command.match(commandParsingRegex);
+    
+    if (!tokens) {
+        return '';
+    }
+
     const commandName = tokens[0];
     const args = tokens.slice(1);
 
@@ -51,7 +65,7 @@ const precompileCommand = (command) => {
         return output;
     }
 
-    return `// ${command}\n${commandsMap[commandName](...args)}`;
+    return `// ${command}\n${commandsMap[commandName](...args)}\n`;
 }
 
 const [inputFilePath, outputFilePath] = process.argv.slice(2);

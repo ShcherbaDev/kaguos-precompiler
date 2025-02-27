@@ -1,8 +1,8 @@
 # KaguOS precompiler (WIP)
 
-Simple precompiler written in javascript for reducing the amount of code for [KaguOS](https://github.com/vovaskochko/KaguOS).
+Simple precompiler written in javascript for reducing the amount of code needed to create programs for [KaguAsm](https://github.com/vovaskochko/KaguOS?tab=readme-ov-file#kaguasm-language).
 
-Based on instructions from practice 5 (instructionSet.html).
+Based on instructions from practice 5 ([instructionSet.html](https://github.com/ShcherbaDev/kaguos-precompiler/blob/master/instructionSet.html)).
 
 ## How to use
 
