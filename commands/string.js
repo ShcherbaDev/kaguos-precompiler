@@ -6,20 +6,20 @@ write OP_GET_LENGTH to REG_OP
 cpu_exec`;
 
 export const isStartsWith = (str, startsWith, true_condition, false_condition) => {
-    let output = `${utils.copyOrWrite(str)} ${str} to REG_A
+	let output = `${utils.copyOrWrite(str)} ${str} to REG_A
 ${utils.copyOrWrite(startsWith)} ${startsWith} to REG_B
 write OP_STARTS_WITH to REG_OP
 cpu_exec`;
-    
-    if (true_condition && true_condition !== argumentIgnore) {
-        output += `\njump_if ${true_condition}`;
-    }
 
-    if (false_condition && false_condition !== argumentIgnore) {
-        output += `\njump_if_not ${false_condition}`;
-    }
+	if (true_condition && true_condition !== argumentIgnore) {
+		output += `\njump_if ${true_condition}`;
+	}
 
-    return output;
+	if (false_condition && false_condition !== argumentIgnore) {
+		output += `\njump_if_not ${false_condition}`;
+	}
+
+	return output;
 }
 
 export const getColumn = (str, columnNumber, separator) => `${utils.copyOrWrite(str)} ${str} to REG_A

@@ -1,20 +1,20 @@
 import * as utils from '../utils.js';
 
 const readInputModes = [
-    'KEYBOARD_READ_LINE', 'KEYBOARD_READ_LINE_SILENTLY',
-    'KEYBOARD_READ_CHAR', 'KEYBOARD_READ_CHAR_SILENTLY'
+	'KEYBOARD_READ_LINE', 'KEYBOARD_READ_LINE_SILENTLY',
+	'KEYBOARD_READ_CHAR', 'KEYBOARD_READ_CHAR_SILENTLY'
 ];
 
 const textColors = [
-    'COLOR_NO',
-    'COLOR_GREEN',
-    'COLOR_YELLOW',
-    'COLOR_RED',
-    'COLOR_BLACK',
-    'COLOR_BLUE',
-    'COLOR_MAGENTA',
-    'COLOR_CYAN',
-    'COLOR_WHITE'
+	'COLOR_NO',
+	'COLOR_GREEN',
+	'COLOR_YELLOW',
+	'COLOR_RED',
+	'COLOR_BLACK',
+	'COLOR_BLUE',
+	'COLOR_MAGENTA',
+	'COLOR_CYAN',
+	'COLOR_WHITE'
 ];
 
 export const readInput = (mode) => `write ${mode in readInputModes ? mode : readInputModes[0]} to REG_A

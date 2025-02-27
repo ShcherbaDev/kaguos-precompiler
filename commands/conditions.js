@@ -3,22 +3,22 @@ import * as utils from '../utils.js';
 export const argumentIgnore = '_';
 
 const simpleEqual = (a, b, command, true_condition, false_condition) => {
-    let output = `${utils.copyOrWrite(a)} ${a} to REG_A`;
+	let output = `${utils.copyOrWrite(a)} ${a} to REG_A`;
 
-    if (b !== null) {
-        output += `\n${utils.copyOrWrite(b)} ${b} to REG_B`;
-    }
+	if (b !== null) {
+		output += `\n${utils.copyOrWrite(b)} ${b} to REG_B`;
+	}
 
-    output += `\nwrite ${command} to REG_OP
+	output += `\nwrite ${command} to REG_OP
 cpu_exec`;
 
-    output += `\njump_if ${true_condition}`;
+	output += `\njump_if ${true_condition}`;
 
-    if (false_condition && false_condition !== argumentIgnore) {
-        output += `\njump_if_not ${false_condition}`;
-    }
+	if (false_condition && false_condition !== argumentIgnore) {
+		output += `\njump_if_not ${false_condition}`;
+	}
 
-    return output;
+	return output;
 }
 
 export const commandIsNumber = (a, true_condition, false_condition) => simpleEqual(a, null, 'OP_IS_NUM', true_condition, false_condition);
