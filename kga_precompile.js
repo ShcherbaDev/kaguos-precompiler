@@ -3,6 +3,7 @@ import * as math from './commands/math.js';
 import * as conditions from './commands/conditions.js';
 import * as string from './commands/string.js';
 import * as io from './commands/io.js';
+import * as other from './commands/other.js';
 
 // =============
 //  Precompiler
@@ -14,13 +15,10 @@ const commandsMap = {
 	// Math
 	'add': math.commandAdd,
 	'sub': math.commandSubtract,
-
 	'++': math.commandIncrement,
 	'inc': math.commandIncrement,
-
 	'--': math.commandDecrement,
 	'dec': math.commandDecrement,
-
 	'div': math.commandDivide,
 	'mod': math.commandModulus,
 	'mlt': math.commandMultiply,
@@ -43,9 +41,18 @@ const commandsMap = {
 	'concat': string.concat,
 
 	// I/O
-	'read_input': io.readInput,
-	'display': (text, color) => io.display(text, color, false),
-	'display_ln': (text, color) => io.display(text, color, true)
+	'read_input': io.commandReadInput,
+	'display': (text, color) => io.commandDisplay(text, color, false),
+	'display_ln': (text, color) => io.commandDisplay(text, color, true),
+	'disk_read': io.commandReadBlock,
+	'disk_write': io.commandWriteBlock,
+	'bitmap': io.commandRenderBitmap,
+
+	// Other
+	'no_operation': other.commandNoOperation,
+	'wait': other.commandNoOperation,
+	'halt': other.commandHalt,
+	'unknown': other.commandUnknown
 };
 
 const precompileCommand = (command) => {
