@@ -95,7 +95,7 @@ if (!inputFilePath) {
 			console.log(precompilatonResult);
 		}
 		else {
-			await writeFile(outputFilePath, precompilatonResult);
+			await writeFile(outputFilePath, '// Made with a precompiler by https://github.com/ShcherbaDev/kaguos-precompiler\n\n' + precompilatonResult + '\n');
 		}
 	}
 	catch (error) {
